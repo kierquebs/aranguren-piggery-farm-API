@@ -3,7 +3,9 @@ module github.com/kierquebs/aranguren-piggery-farm-API
 go 1.18
 
 require (
+	cloud.google.com/go/firestore v1.6.1
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/aws/aws-lambda-go v1.34.1
 	github.com/gofiber/fiber/v2 v2.37.0
 	github.com/joho/godotenv v1.4.0
 	google.golang.org/api v0.94.0
@@ -12,7 +14,6 @@ require (
 require (
 	cloud.google.com/go v0.102.1 // indirect
 	cloud.google.com/go/compute v1.7.0 // indirect
-	cloud.google.com/go/firestore v1.6.1 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
 	cloud.google.com/go/storage v1.26.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
