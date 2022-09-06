@@ -28,8 +28,6 @@ func init() {
 
 const idleTimeout = 5 * time.Second
 
-var port = os.Getenv("API_Port")
-
 func main() {
 	app := fiber.New()
 	setup.Routes(app)
@@ -39,6 +37,7 @@ func main() {
 	})
 
 	// Listen from a different goroutine
+	port := os.Getenv("API_Port")
 	go func() {
 		if err := app.Listen(":" + port); err != nil {
 			log.Panic(err)
