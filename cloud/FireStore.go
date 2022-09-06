@@ -2,17 +2,20 @@ package cloud
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
+	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 
 	"google.golang.org/api/option"
 )
 
+var Client *firestore.Client
+var err error
+
 func FirestoreInit() {
-	fmt.Println("Connecting to Firestore...")
+	log.Println("Connecting to Firestore...")
 
 	// Use a service account
 	ctx := context.Background()
@@ -22,12 +25,13 @@ func FirestoreInit() {
 		log.Fatalln(err)
 	}
 
-	client, err := app.Firestore(ctx)
+	Client, err = app.Firestore(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	fmt.Println(client)
-	defer client.Close()
+	log.Println("Successfully connected to Firestore...")
+
+	defer Client.Close()
 
 }
