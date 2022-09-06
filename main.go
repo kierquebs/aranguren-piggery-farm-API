@@ -28,7 +28,7 @@ func init() {
 
 const idleTimeout = 5 * time.Second
 
-var port = os.Getenv("Port")
+var port = os.Getenv("API_Port")
 
 func main() {
 	app := fiber.New()
