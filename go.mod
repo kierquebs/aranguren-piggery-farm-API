@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-lambda-go v1.34.1
 	github.com/gofiber/fiber/v2 v2.37.0
 	github.com/joho/godotenv v1.4.0
+	github.com/lib/pq v1.10.7
 	google.golang.org/api v0.94.0
 )
 

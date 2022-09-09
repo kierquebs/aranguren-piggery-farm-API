@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kierquebs/aranguren-piggery-farm-API/cloud"
+	"github.com/kierquebs/aranguren-piggery-farm-API/db"
 	"github.com/kierquebs/aranguren-piggery-farm-API/setup"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,6 +25,8 @@ func init() {
 	}
 
 	cloud.FirestoreInit()
+	db.CCDBCon()
+
 }
 
 const idleTimeout = 5 * time.Second
