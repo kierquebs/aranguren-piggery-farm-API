@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"github.com/kierquebs/aranguren-piggery-farm-API/controller/qrcode"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/stocks"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,4 +15,8 @@ func Routes(app *fiber.App) {
 	//Stocks Group
 	stock := api.Group("/stock", logger.New())
 	stock.Get("/FindByQR", stocks.FindByQR)
+
+	//QR Group
+	qr := api.Group("/qr", logger.New())
+	qr.Post("/Generate", qrcode.Generate)
 }
