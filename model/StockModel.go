@@ -1,18 +1,11 @@
 package model
 
-type InsertStockModel struct {
-	ID                              int32   `json:"id"`
-	Added_Date                      string  `json:"added_date"`
-	Last_Update_Date                string  `json:"last_updated_date"`
-	Updated_By                      string  `json:"updated_by"`
-	Initial_Weight                  int32   `json:"initial_weight"`
-	Current_Weight                  int32   `json:"current_weight"`
-	Type                            int32   `json:"type"`
-	Current_Price                   float32 `json:"current_price"`
-	Current_Price_Last_Updated_Date string  `json:"current_price_last_updated_date"`
-	QR_Code                         string  `json:"qr_code"`
-	Remarks                         string  `json:"remarks"`
-	Added_By                        string  `json:"added_by"`
+type CreateStockModel struct {
+	Added_By       int32   `json:"added_by"`
+	Initial_Weight float32 `json:"initial_weight"`
+	Type           int32   `json:"type"`
+	Current_Price  float32 `json:"current_price"`
+	Remarks        string  `json:"remarks"`
 }
 
 //ViewStockModel  this model is used by the Database public.view.view_t_stock
