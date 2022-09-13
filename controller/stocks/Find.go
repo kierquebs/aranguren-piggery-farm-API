@@ -59,10 +59,9 @@ func FindByQR(c *fiber.Ctx) error {
 		); err != nil {
 			return err // Exit if we get an error
 		}
-
-		// Append Employee to Employees
+		// Append stock to result
 		result = append(result, stock)
 	}
-	// Return Employees in JSON format
+	// Return Stock in JSON format
 	return c.JSON(result)
 }

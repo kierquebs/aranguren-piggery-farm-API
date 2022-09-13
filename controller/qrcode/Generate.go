@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/kierquebs/aranguren-piggery-farm-API/controller/stocks"
 	"github.com/kierquebs/aranguren-piggery-farm-API/model"
 	"github.com/kierquebs/aranguren-piggery-farm-API/utils"
 )
@@ -25,8 +26,16 @@ func Generate(c *fiber.Ctx) error {
 		return err
 	}
 
-	d := utils.UploadQR(encoded + ".png")
+	result, err := utils.UploadQR(encoded + ".png")
+	if err != nil {
+		return err
+	}
 
-	return c.JSON(string(d))
+	err = stocks.UpdateQR(c, encoded)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(result)
 
 }
