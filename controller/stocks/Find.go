@@ -65,3 +65,53 @@ func FindByQR(c *fiber.Ctx) error {
 	// Return Stock in JSON format
 	return c.JSON(result)
 }
+
+func ListAll(c *fiber.Ctx) error {
+
+	rows, err := database.CCDB.Query(`SELECT 
+					id,
+					added_date,
+					added_by,
+					last_updated_date, 
+					updated_by, 
+					initial_weight, 
+					current_weight,
+					type,
+					type_description,
+					current_price, 
+					current_price_last_updated_date,
+					remarks
+					FROM public.view_t_stock
+					ORDER BY added_date DESC
+				`)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+	defer rows.Close()
+
+	result := vsm
+
+	for rows.Next() {
+		stock := model.ViewStockModel{}
+		if err := rows.Scan(
+			&stock.ID,
+			&stock.Added_Date,
+			&stock.Added_By,
+			&stock.Last_Update_Date,
+			&stock.Updated_By,
+			&stock.Initial_Weight,
+			&stock.Current_Weight,
+			&stock.Type,
+			&stock.Type_Description,
+			&stock.Current_Price,
+			&stock.Current_Price_Last_Updated_Date,
+			&stock.Remarks,
+		); err != nil {
+			return err // Exit if we get an error
+		}
+		// Append stock to result
+		result = append(result, stock)
+	}
+	// Return Stock in JSON format
+	return c.JSON(result)
+}
