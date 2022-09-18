@@ -1,0 +1,11 @@
+// Workspace key bindings
+[
+    {
+        "key": "shift+cmd+r",
+        "command": "macros.restartNozparseServer"
+    },
+    {
+      "key": "shift+cmd+k",
+      "command": "workbench.action.tasks.runTask"
+    }
+  ]
