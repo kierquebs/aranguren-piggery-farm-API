@@ -1,0 +1,22 @@
+// These are the default tasks for this repo.
+// These tasks can be overwritten using your User tasks.json
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "gpom --autostash",
+        "detail": "runs git pull origin master --autostash",
+        "type": "shell",
+        "command": "git pull origin master --autostash",
+        "presentation": {
+          "clear": true
+        },
+        "options": {
+          "statusbar": {
+            "hide" : false
+          }
+        }
+      }
+    ]
+  }
+  
