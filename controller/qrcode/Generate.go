@@ -11,7 +11,7 @@ import (
 )
 
 func Generate(c *fiber.Ctx) error {
-
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 	genQR := new(model.GenerateQR)
 	utils.BodyParser(c, genQR)
 
