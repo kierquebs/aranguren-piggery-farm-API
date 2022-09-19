@@ -16,8 +16,19 @@ func Create(c *fiber.Ctx) error {
 		return c.SendString(err.Error())
 	}
 
-	_, err := database.CCDB.Exec(`INSERT INTO public.t_stock(added_date,added_by, initial_weight,current_weight,type, current_price,remarks)
-		VALUES (Now(),$1,$2,$3,$4,$5,$6);`,
+	_, err := database.CCDB.Exec(`INSERT INTO public.t_stock(
+		added_date,
+		last_updated_date,
+		current_price_last_updated_date,
+		added_by,
+		updated_by,
+		initial_weight,
+		current_weight,
+		type, 
+		current_price,
+		remarks)
+		VALUES (Now(),Now(),Now(),$1,$2,$3,$4,$5,$6,$7);`,
+		newStock.Added_By,
 		newStock.Added_By,
 		newStock.Initial_Weight,
 		newStock.Initial_Weight,
@@ -29,6 +40,7 @@ func Create(c *fiber.Ctx) error {
 		log.Fatalf("An error occured while executing query: %v", err)
 		return err
 	}
-	return c.JSON("Success")
+
+	return c.JSON(fiber.Map{"responseCode": 200, "message": "New stock successfully added."})
 
 }
