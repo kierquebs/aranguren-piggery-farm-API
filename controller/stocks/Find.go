@@ -68,6 +68,8 @@ func FindByQR(c *fiber.Ctx) error {
 
 func ListAll(c *fiber.Ctx) error {
 
+	c.Accepts("Access-Control-Allow-Origin")
+
 	rows, err := database.CCDB.Query(`SELECT 
 					id,
 					added_date,
