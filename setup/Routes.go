@@ -15,7 +15,7 @@ func Routes(app *fiber.App) {
 
 	//Stocks Group
 	stock := api.Group("/stock", logger.New())
-	stock.Get("/FindByQR", stocks.FindByQR)
+	stock.Post("/FindByQR", stocks.FindByQR)
 	stock.Get("/ListAll", stocks.ListAll)
 	stock.Post("/Create", stocks.Create)
 
