@@ -35,13 +35,14 @@ func FindByQR(c *fiber.Ctx) error {
 					remarks
 					FROM public.view_t_stock WHERE qr_code = $1`, qr.Code)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.Status(500).JSON(fiber.Map{"responseCode": 500, "message": "Error: " + err.Error(), "data": nil})
 	}
+
 	defer rows.Close()
 
 	result := vsm
 
-	for rows.Next() {
+	if rows.Next() {
 		stock := model.ViewStockModel{}
 		if err := rows.Scan(
 			&stock.ID,
@@ -57,13 +58,21 @@ func FindByQR(c *fiber.Ctx) error {
 			&stock.Current_Price_Last_Updated_Date,
 			&stock.Remarks,
 		); err != nil {
-			return err // Exit if we get an error
+
+			return c.JSON(fiber.Map{"responseCode": 400, "message": "Error: " + err.Error(), "data": result})
+
 		}
+
 		// Append stock to result
 		result = append(result, stock)
+
+	} else {
+		return c.JSON(fiber.Map{"responseCode": 400, "message": "QR Code not found.", "data": nil})
 	}
+
 	// Return Stock in JSON format
-	return c.JSON(result)
+	return c.JSON(fiber.Map{"responseCode": 200, "message": "Details fetched succesfully.", "data": result})
+
 }
 
 func ListAll(c *fiber.Ctx) error {
