@@ -9,7 +9,7 @@ import (
 )
 
 func Create(c *fiber.Ctx) error {
-
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 	newClass := model.ClassificationModel{}
 	if err := c.BodyParser(&newClass); err != nil {
 		log.Printf("An error occured: %v", err)

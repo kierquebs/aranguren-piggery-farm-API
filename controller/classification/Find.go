@@ -9,7 +9,7 @@ import (
 var cm []model.ClassificationModel
 
 func ListAll(c *fiber.Ctx) error {
-
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 	rows, err := database.CCDB.Query(`SELECT 
 					id,
 					title,

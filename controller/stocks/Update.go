@@ -8,7 +8,7 @@ import (
 )
 
 func UpdateQR(c *fiber.Ctx, qr string) error {
-
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 	genQR := new(model.GenerateQR)
 	utils.BodyParser(c, genQR)
 
