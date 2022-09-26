@@ -27,7 +27,11 @@ func Create(c *fiber.Ctx) error {
 		type, 
 		current_price,
 		remarks)
-		VALUES (Now(),Now(),Now(),$1,$2,$3,$4,$5,$6,$7);`,
+		VALUES (
+			Now() AT TIME ZONE 'Asia/Manila', 
+			Now() AT TIME ZONE 'Asia/Manila',
+			Now() AT TIME ZONE 'Asia/Manila',
+			$1,$2,$3,$4,$5,$6,$7);`,
 		newStock.Added_By,
 		newStock.Added_By,
 		newStock.Initial_Weight,
