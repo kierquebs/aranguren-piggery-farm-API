@@ -1,11 +1,9 @@
 package model
 
 type CreateStockModel struct {
-	Added_By       int32   `json:"added_by"`
-	Initial_Weight float32 `json:"initial_weight"`
-	Type           int32   `json:"type"`
-	Current_Price  float32 `json:"current_price"`
-	Remarks        string  `json:"remarks"`
+	Added_By        int32   `json:"added_by"`
+	Initial_Weight  float32 `json:"initial_weight"`
+	Initial_Day_Old int32   `json:"initial_day_old"`
 }
 
 //ViewStockModel  this model is used by the Database public.view.view_t_stock
