@@ -19,26 +19,15 @@ func Create(c *fiber.Ctx) error {
 	_, err := database.CCDB.Exec(`INSERT INTO public.t_stock(
 		added_date,
 		last_updated_date,
-		current_price_last_updated_date,
-		added_by,
-		updated_by,
 		initial_weight,
-		current_weight,
-		type, 
-		current_price,
-		remarks)
+		initial_day_old,
+		status)
 		VALUES (
 			Now() AT TIME ZONE 'Asia/Manila', 
 			Now() AT TIME ZONE 'Asia/Manila',
-			Now() AT TIME ZONE 'Asia/Manila',
-			$1,$2,$3,$4,$5,$6,$7);`,
-		newStock.Added_By,
-		newStock.Added_By,
+			$1,$2,1);`,
 		newStock.Initial_Weight,
-		newStock.Initial_Weight,
-		newStock.Type,
-		newStock.Current_Price,
-		newStock.Remarks,
+		newStock.Initial_Day_Old,
 	)
 	if err != nil {
 		log.Fatalf("An error occured while executing query: %v", err)
