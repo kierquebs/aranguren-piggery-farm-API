@@ -25,17 +25,12 @@ func FindByQR(c *fiber.Ctx) error {
 	rows, err := database.CCDB.Query(`SELECT 
 					id,
 					added_date,
-					added_by,
 					last_updated_date, 
-					updated_by, 
-					initial_weight, 
-					current_weight,
-					type,
-					type_description,
-					current_price, 
-					current_price_last_updated_date,
-					remarks
-					FROM public.view_t_stock WHERE qr_code = $1`, qr.Code)
+					initial_weight,
+					initial_day_old,
+					Now() AT TIME ZONE 'Asia/Manila',
+					status
+					FROM public.view_t_stock WHERE qr_code = $1 ORDER BY added_date DESC`, qr.Code)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"responseCode": 500, "message": "Error: " + err.Error(), "data": nil})
 	}
