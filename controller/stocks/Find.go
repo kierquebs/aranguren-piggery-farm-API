@@ -77,7 +77,7 @@ func FindByQR(c *fiber.Ctx) error {
 			return c.Status(500).SendString(err.Error())
 		}
 
-		stock.Age_By_Days = days
+		stock.Age_By_Days = days + int(stock.Initial_Day_Old)
 
 		if days >= 90 {
 			stock.Description = "For Sale"
@@ -173,7 +173,7 @@ func ListAll(c *fiber.Ctx) error {
 			return c.Status(500).SendString(err.Error())
 		}
 
-		stock.Age_By_Days = days
+		stock.Age_By_Days = days + int(stock.Initial_Day_Old)
 
 		if days >= 90 {
 			stock.Description = "For Sale"
