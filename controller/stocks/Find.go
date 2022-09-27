@@ -1,6 +1,8 @@
 package stocks
 
 import (
+	"log"
+
 	"github.com/kierquebs/aranguren-piggery-farm-API/database"
 	"github.com/kierquebs/aranguren-piggery-farm-API/model"
 	"github.com/kierquebs/aranguren-piggery-farm-API/utils"
@@ -47,21 +49,62 @@ func FindByQR(c *fiber.Ctx) error {
 		if err := rows.Scan(
 			&stock.ID,
 			&stock.Added_Date,
-			&stock.Added_By,
 			&stock.Last_Update_Date,
-			&stock.Updated_By,
 			&stock.Initial_Weight,
-			&stock.Current_Weight,
-			&stock.Type,
-			&stock.Type_Description,
-			&stock.Current_Price,
-			&stock.Current_Price_Last_Updated_Date,
-			&stock.Remarks,
+			&stock.Initial_Day_Old,
+			&stock.Current_DateTime,
+			&stock.Status,
 		); err != nil {
-
-			return c.JSON(fiber.Map{"responseCode": 400, "message": "Error: " + err.Error(), "data": result})
-
+			return err // Exit if we get an error
 		}
+
+		//Logic to add status description
+		switch stock.Status {
+		case 1:
+			stock.Status_Description = "In Stock"
+		case 2:
+			stock.Status_Description = "Sold"
+		case 3:
+			stock.Status_Description = "Deceased"
+		}
+		//end
+
+		//------------------------------------------------
+
+		//Age computation
+		days, err := utils.CountDays(stock.Added_Date, stock.Current_DateTime)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+
+		stock.Age_By_Days = days
+
+		if days >= 90 {
+			stock.Description = "For Sale"
+		} else {
+			stock.Description = "Not yet ready to sell"
+		}
+		//end
+
+		//------------------------------------------------
+
+		//Estimated Weight computation
+		finalWeightAvg, err := FinalWeightAvg()
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+
+		initialWeightAvg, err := InitialWeightAvg()
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+
+		var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
+
+		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
+
+		stock.Estimated_Current_Weight = estimatedCurrentWeight
+		//end
 
 		// Append stock to result
 		result = append(result, stock)
@@ -82,16 +125,11 @@ func ListAll(c *fiber.Ctx) error {
 	rows, err := database.CCDB.Query(`SELECT 
 					id,
 					added_date,
-					added_by,
 					last_updated_date, 
-					updated_by, 
-					initial_weight, 
-					current_weight,
-					type,
-					type_description,
-					current_price, 
-					current_price_last_updated_date,
-					remarks
+					initial_weight,
+					initial_day_old,
+					Now() AT TIME ZONE 'Asia/Manila',
+					status
 					FROM public.view_t_stock
 					ORDER BY added_date DESC
 				`)
@@ -107,22 +145,86 @@ func ListAll(c *fiber.Ctx) error {
 		if err := rows.Scan(
 			&stock.ID,
 			&stock.Added_Date,
-			&stock.Added_By,
 			&stock.Last_Update_Date,
-			&stock.Updated_By,
 			&stock.Initial_Weight,
-			&stock.Current_Weight,
-			&stock.Type,
-			&stock.Type_Description,
-			&stock.Current_Price,
-			&stock.Current_Price_Last_Updated_Date,
-			&stock.Remarks,
+			&stock.Initial_Day_Old,
+			&stock.Current_DateTime,
+			&stock.Status,
 		); err != nil {
 			return err // Exit if we get an error
 		}
+
+		//Logic to add status description
+		switch stock.Status {
+		case 1:
+			stock.Status_Description = "In Stock"
+		case 2:
+			stock.Status_Description = "Sold"
+		case 3:
+			stock.Status_Description = "Deceased"
+		}
+		//end
+
+		//------------------------------------------------
+
+		//Age computation
+		days, err := utils.CountDays(stock.Added_Date, stock.Current_DateTime)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+
+		stock.Age_By_Days = days
+
+		if days >= 90 {
+			stock.Description = "For Sale"
+		} else {
+			stock.Description = "Not yet ready to sell"
+		}
+		//end
+
+		//------------------------------------------------
+
+		//Estimated Weight computation
+		finalWeightAvg, err := FinalWeightAvg()
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+
+		initialWeightAvg, err := InitialWeightAvg()
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+
+		var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
+
+		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
+
+		stock.Estimated_Current_Weight = estimatedCurrentWeight
+		//end
+
 		// Append stock to result
 		result = append(result, stock)
 	}
 	// Return Stock in JSON format
 	return c.JSON(result)
+}
+
+func FinalWeightAvg() (float32, error) {
+	var ave float32
+	err := database.CCDB.QueryRow("select AVG(final_weight) FROM public.t_final_weight").Scan(&ave)
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+	return ave, nil
+}
+
+func InitialWeightAvg() (float32, error) {
+	var ave float32
+	err := database.CCDB.QueryRow("select AVG(initial_weight) FROM public.t_stock WHERE status = 3").Scan(&ave)
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+	return ave, nil
 }
