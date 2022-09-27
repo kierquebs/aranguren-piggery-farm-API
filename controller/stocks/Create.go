@@ -10,6 +10,8 @@ import (
 
 func Create(c *fiber.Ctx) error {
 
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
+
 	newStock := model.CreateStockModel{}
 	if err := c.BodyParser(&newStock); err != nil {
 		log.Printf("An error occured: %v", err)
