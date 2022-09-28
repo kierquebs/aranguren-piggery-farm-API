@@ -18,6 +18,17 @@ var vsm []model.ViewStockModel
 
 func FindByQR(c *fiber.Ctx) error {
 
+	//Estimated Weight computation
+	finalWeightAvg, err := FinalWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	initialWeightAvg, err := InitialWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
 	qr := new(qr)
 
 	utils.BodyParser(c, qr)
@@ -83,17 +94,6 @@ func FindByQR(c *fiber.Ctx) error {
 
 		//------------------------------------------------
 
-		//Estimated Weight computation
-		finalWeightAvg, err := FinalWeightAvg()
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-
-		initialWeightAvg, err := InitialWeightAvg()
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-
 		var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
 
 		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
@@ -114,6 +114,17 @@ func FindByQR(c *fiber.Ctx) error {
 }
 
 func ListAll(c *fiber.Ctx) error {
+
+	//Estimated Weight computation
+	finalWeightAvg, err := FinalWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	initialWeightAvg, err := InitialWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
 
 	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 
@@ -178,17 +189,6 @@ func ListAll(c *fiber.Ctx) error {
 		//end
 
 		//------------------------------------------------
-
-		//Estimated Weight computation
-		finalWeightAvg, err := FinalWeightAvg()
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-
-		initialWeightAvg, err := InitialWeightAvg()
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
 
 		var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
 
