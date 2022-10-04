@@ -1,6 +1,7 @@
 package stocks
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/kierquebs/aranguren-piggery-farm-API/database"
@@ -126,6 +127,8 @@ func ListAll(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 
+	fmt.Println(fmt.Sprintf("--------------- \n  Average Final Weight: %v \n Average Initial Weight: %v", finalWeightAvg, initialWeightAvg))
+
 	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 
 	rows, err := database.CCDB.Query(`SELECT 
@@ -192,7 +195,11 @@ func ListAll(c *fiber.Ctx) error {
 
 		var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
 
-		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
+		fmt.Println("Aerage Added Weight per Day:", averageAddedWeightPerDay)
+		fmt.Println("Initial weight:", stock.Initial_Weight)
+
+		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(stock.Age_By_Days))
+		fmt.Println("estimatedCurrentWeight:", averageAddedWeightPerDay)
 
 		stock.Estimated_Current_Weight = estimatedCurrentWeight
 		//end
