@@ -181,8 +181,8 @@ func ListAll(c *fiber.Ctx) error {
 
 		stock.Age_By_Days = days + int(stock.Initial_Day_Old)
 
-		if days >= 90 {
-			stock.Description = "For Sale"
+		if days >= 120 {
+			stock.Description = "Sell"
 		} else {
 			stock.Description = "Not yet ready to sell"
 		}
