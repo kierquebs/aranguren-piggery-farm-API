@@ -216,7 +216,9 @@ func FinalWeightAvg() (float32, error) {
 
 func InitialWeightAvg() (float32, error) {
 	var ave float32
-	err := database.CCDB.QueryRow("select AVG(initial_weight) FROM public.t_stock WHERE status = 3").Scan(&ave)
+	err := database.CCDB.QueryRow(`	SELECT AVG(t.initial_weight) 
+									FROM public.t_stock t
+									JOIN public.t_final_weight ON t_final_weight.stock_id = t.id`).Scan(&ave)
 	if err != nil {
 		log.Fatal(err)
 		return 0, err
