@@ -69,3 +69,44 @@ func Create(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"responseCode": 200, "message": sqlStatement})
 
 }
+
+func IsSold(c *fiber.Ctx) error {
+	id := c.Params("id")
+	type Exist struct {
+		exists bool
+	}
+
+	var exist []Exist
+
+	sqlStmnt := `SELECT EXISTS(SELECT 1 FROM public.t_transaction WHERE stock_id = ` + id + `);`
+	fmt.Println(sqlStmnt)
+
+	rows, err := database.CCDB.Query(sqlStmnt)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"responseCode": 500, "message": "Error: " + err.Error(), "data": nil})
+	}
+
+	defer rows.Close()
+
+	result := exist
+	ex := Exist{}
+
+	if rows.Next() {
+
+		if err := rows.Scan(
+			&ex.exists,
+		); err != nil {
+			return c.Status(500).JSON(fiber.Map{"responseCode": 500, "message": "Error: " + err.Error(), "data": nil})
+		}
+		result = append(result, ex)
+
+	}
+	if ex.exists {
+		return c.JSON(fiber.Map{"responseCode": 400, "message": "Invalid data. Please try again.", "data": nil})
+	}
+
+	// Append stock to result
+
+	return c.JSON(fiber.Map{"responseCode": 200, "message": "Valid Data", "data": nil})
+
+}

@@ -17,6 +17,7 @@ func Routes(app *fiber.App) {
 	//Stocks Group
 	stock := api.Group("/stock", logger.New())
 	stock.Post("/FindByQR", stocks.FindByQR)
+	stock.Get("/FindByID/:id", stocks.FindByID)
 	stock.Get("/ListAll", stocks.ListAll)
 	stock.Post("/Create", stocks.Create)
 
@@ -32,4 +33,5 @@ func Routes(app *fiber.App) {
 	//Transaction Group
 	trn := api.Group("/transaction", logger.New())
 	trn.Post("/Sell", transaction.Create)
+	trn.Get("/IsSold/:id", transaction.IsSold)
 }

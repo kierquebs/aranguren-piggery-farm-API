@@ -114,6 +114,100 @@ func FindByQR(c *fiber.Ctx) error {
 
 }
 
+func FindByID(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+	//Estimated Weight computation
+	finalWeightAvg, err := FinalWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	initialWeightAvg, err := InitialWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	rows, err := database.CCDB.Query(`SELECT 
+					id,
+					added_date,
+					last_updated_date, 
+					initial_weight,
+					initial_day_old,
+					Now() AT TIME ZONE 'Asia/Manila',
+					status
+					FROM public.view_t_stock WHERE id = $1 `, id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"responseCode": 500, "message": "Error: " + err.Error(), "data": nil})
+	}
+
+	defer rows.Close()
+
+	result := vsm
+
+	if rows.Next() {
+		stock := model.ViewStockModel{}
+		if err := rows.Scan(
+			&stock.ID,
+			&stock.Added_Date,
+			&stock.Last_Update_Date,
+			&stock.Initial_Weight,
+			&stock.Initial_Day_Old,
+			&stock.Current_DateTime,
+			&stock.Status,
+		); err != nil {
+			return err // Exit if we get an error
+		}
+
+		//Logic to add status description
+		switch stock.Status {
+		case 1:
+			stock.Status_Description = "In Stock"
+		case 2:
+			stock.Status_Description = "Sold"
+		case 3:
+			stock.Status_Description = "Deceased"
+		}
+		//end
+
+		//------------------------------------------------
+
+		//Age computation
+		days, err := utils.CountDays(stock.Added_Date, stock.Current_DateTime)
+		if err != nil {
+			return c.Status(500).SendString(err.Error())
+		}
+
+		stock.Age_By_Days = days + int(stock.Initial_Day_Old)
+
+		if days >= 90 {
+			stock.Description = "For Sale"
+		} else {
+			stock.Description = "Not yet ready to sell"
+		}
+		//end
+
+		//------------------------------------------------
+
+		var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
+
+		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
+
+		stock.Estimated_Current_Weight = estimatedCurrentWeight
+		//end
+
+		// Append stock to result
+		result = append(result, stock)
+
+	} else {
+		return c.JSON(fiber.Map{"responseCode": 400, "message": "ID not found.", "data": nil})
+	}
+
+	// Return Stock in JSON format
+	return c.JSON(fiber.Map{"responseCode": 200, "message": "Details fetched succesfully.", "data": result})
+
+}
+
 func ListAll(c *fiber.Ctx) error {
 
 	//Estimated Weight computation
