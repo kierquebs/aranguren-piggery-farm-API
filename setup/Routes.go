@@ -4,6 +4,7 @@ import (
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/classification"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/qrcode"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/stocks"
+	"github.com/kierquebs/aranguren-piggery-farm-API/controller/transaction"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -27,4 +28,8 @@ func Routes(app *fiber.App) {
 	//QR Group
 	qr := api.Group("/qr", logger.New())
 	qr.Post("/Generate", qrcode.Generate)
+
+	//Transaction Group
+	trn := api.Group("/transaction", logger.New())
+	trn.Post("/Sell", transaction.Create)
 }
