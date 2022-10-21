@@ -18,7 +18,7 @@ type qr struct {
 var vsm []model.ViewStockModel
 
 func FindByQR(c *fiber.Ctx) error {
-
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 	//Estimated Weight computation
 	finalWeightAvg, err := FinalWeightAvg()
 	if err != nil {
@@ -115,7 +115,7 @@ func FindByQR(c *fiber.Ctx) error {
 }
 
 func FindByID(c *fiber.Ctx) error {
-
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 	id := c.Params("id")
 	//Estimated Weight computation
 	finalWeightAvg, err := FinalWeightAvg()
@@ -209,7 +209,7 @@ func FindByID(c *fiber.Ctx) error {
 }
 
 func ListAll(c *fiber.Ctx) error {
-
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
 	//Estimated Weight computation
 	finalWeightAvg, err := FinalWeightAvg()
 	if err != nil {
