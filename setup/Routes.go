@@ -34,4 +34,5 @@ func Routes(app *fiber.App) {
 	trn := api.Group("/transaction", logger.New())
 	trn.Post("/Sell", transaction.Create)
 	trn.Get("/IsSold/:id", transaction.IsSold)
+	trn.Get("/Find", transaction.Find)
 }
