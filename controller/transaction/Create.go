@@ -22,9 +22,11 @@ func Create(c *fiber.Ctx) error {
 		return c.SendString(err.Error())
 	}
 
-	db.CurrentTime()
 	insertStmt := ``
+	updateFnlWghtStmt := ``
+
 	refId := db.GenerateRefId(trn.FirstName, trn.LastName, len(trn.Pigs))
+
 	var id []int
 
 	for i, v := range trn.Pigs {
@@ -32,6 +34,8 @@ func Create(c *fiber.Ctx) error {
 		conv, _ := strconv.Atoi(v.PigID)
 
 		id = append(id, conv)
+
+		updateFnlWghtStmt += fmt.Sprintf("UPDATE public.t_stock  SET final_weight = %v WHERE id = %v;", trn.Pigs[i].FinalWeight, trn.Pigs[i].PigID)
 
 		if i == len(trn.Pigs)-1 {
 			insertStmt += fmt.Sprintf("('%v',Now(), '%v', '%v', '%v', '%v', %v, %v)",
@@ -54,6 +58,8 @@ func Create(c *fiber.Ctx) error {
 	BEGIN;
 	UPDATE public.t_stock  SET status = 2 
 						WHERE id = ANY (ARRAY ` + string(ids) + `);
+						
+	` + updateFnlWghtStmt + `					
 
 	INSERT INTO public.t_transaction(
 						ref_id, trn_date, first_name, middle_name, last_name, mobile_number, price_per_kilo, stock_id)` +
