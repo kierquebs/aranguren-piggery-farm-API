@@ -113,7 +113,7 @@ func Find(c *fiber.Ctx) error {
 
 func FindByRefID(c *fiber.Ctx) error {
 	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
-	refID := c.Params("refId")
+	refID := c.Params("refID")
 
 	trnRows, err := database.CCDB.Query(`	SELECT  
 												t.ref_id, 

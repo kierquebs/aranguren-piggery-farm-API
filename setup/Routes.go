@@ -35,4 +35,5 @@ func Routes(app *fiber.App) {
 	trn.Post("/Sell", transaction.Create)
 	trn.Get("/IsSold/:id", transaction.IsSold)
 	trn.Get("/Find", transaction.Find)
+	trn.Get("/Find/:refID", transaction.FindByRefID)
 }
