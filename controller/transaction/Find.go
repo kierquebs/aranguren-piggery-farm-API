@@ -31,13 +31,13 @@ type ViewTransactionModel struct {
 	Stocks       StockSlice `json:"stock"`
 }
 
-// Make the Attrs struct implement the driver.Valuer interface. This method
+// Make the Stock struct implement the driver.Valuer interface. This method
 // simply returns the JSON-encoded representation of the struct.
 func (s Stock) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }
 
-// Make the Attrs struct implement the sql.Scanner interface. This method
+// Make the StockSlice struct implement the sql.Scanner interface. This method
 // simply decodes a JSON-encoded value into the struct fields.
 func (s *StockSlice) Scan(value interface{}) error {
 	switch v := value.(type) {
