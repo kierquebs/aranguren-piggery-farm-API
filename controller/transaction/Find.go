@@ -132,7 +132,7 @@ func FindByRefID(c *fiber.Ctx) error {
 												)) as stock
 											FROM public.t_transaction t
 											JOIN public.t_stock s ON s.id = t.stock_id
-											WHERE t.ref_id = ` + refID + `
+											WHERE t.ref_id = '` + refID + `'
 											GROUP BY
 												t.ref_id, 
 												t.trn_date, 
