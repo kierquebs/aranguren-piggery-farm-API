@@ -25,7 +25,7 @@ func Create(c *fiber.Ctx) error {
 	insertStmt := ``
 	updateFnlWghtStmt := ``
 
-	refId := db.GenerateRefId(trn.FirstName, trn.LastName, len(trn.Pigs))
+	trn.Ref_ID = db.GenerateRefId(trn.FirstName, trn.LastName, len(trn.Pigs))
 
 	var id []int
 
@@ -39,10 +39,10 @@ func Create(c *fiber.Ctx) error {
 
 		if i == len(trn.Pigs)-1 {
 			insertStmt += fmt.Sprintf("('%v',Now(), '%v', '%v', '%v', '%v', %v, %v)",
-				refId, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.PigID)
+				trn.Ref_ID, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.PigID)
 		} else {
 			insertStmt += fmt.Sprintf("('%v',Now(), '%v','%v','%v','%v', %v, %v),",
-				refId, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.PigID)
+				trn.Ref_ID, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.PigID)
 		}
 
 	}
@@ -72,7 +72,7 @@ func Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(fiber.Map{"responseCode": 200, "message": sqlStatement})
+	return c.JSON(fiber.Map{"responseCode": 200, "message": "Successfully Transacted", "data": trn})
 
 }
 

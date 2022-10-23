@@ -12,6 +12,7 @@ type NewTransactionModel struct {
 	MiddleName   string  `json:"middle_name"`
 	PricePerKilo float64 `json:"price_per_kilo"`
 	MobileNo     string  `json:"mobile_no"`
+	Ref_ID       string  `json:"ref_id"`
 }
 
 type ViewTransactionModel struct {
