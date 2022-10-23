@@ -52,6 +52,68 @@ func (s *StockSlice) Scan(value interface{}) error {
 var trnModel []ViewTransactionModel
 
 func Find(c *fiber.Ctx) error {
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
+	trnRows, err := database.CCDB.Query(`	SELECT  
+												t.ref_id, 
+												t.trn_date, 
+												t.first_name, 
+												t.middle_name, 
+												t.last_name, 
+												t.mobile_number, 
+												t.price_per_kilo, 
+												jsonb_agg(json_build_object(
+													'id',s.id,
+													'added_date',s.added_date,
+													'qr_code',s.qr_code,
+													'final_weight',s.final_weight,
+													'initial_weight',s.initial_weight
+												)) as stock
+											FROM public.t_transaction t
+											JOIN public.t_stock s ON s.id = t.stock_id
+											GROUP BY
+												t.ref_id, 
+												t.trn_date, 
+												t.first_name, 
+												t.middle_name, 
+												t.last_name, 
+												t.mobile_number, 
+												t.price_per_kilo
+									`)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"responseCode": 500, "message": "Error: " + err.Error(), "data": nil})
+	}
+
+	defer trnRows.Close()
+
+	result := trnModel
+
+	for trnRows.Next() {
+		trn := ViewTransactionModel{}
+		if err := trnRows.Scan(
+			&trn.RefID,
+			&trn.Trn_Date,
+			&trn.FirstName,
+			&trn.MiddleName,
+			&trn.LastName,
+			&trn.MobileNo,
+			&trn.PricePerKilo,
+			&trn.Stocks,
+		); err != nil {
+			return err // Exit if we get an error
+		}
+
+		result = append(result, trn)
+
+	}
+
+	// Return Stock in JSON format
+	return c.JSON(fiber.Map{"responseCode": 200, "message": "Details fetched succesfully.", "data": result})
+
+}
+
+func FindByRefID(c *fiber.Ctx) error {
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
+	refID := c.Params("refId")
 
 	trnRows, err := database.CCDB.Query(`	SELECT  
 												t.ref_id, 
@@ -70,6 +132,7 @@ func Find(c *fiber.Ctx) error {
 												)) as stock
 											FROM public.t_transaction t
 											JOIN public.t_stock s ON s.id = t.stock_id
+											WHERE t.ref_id = ` + refID + `
 											GROUP BY
 												t.ref_id, 
 												t.trn_date, 
