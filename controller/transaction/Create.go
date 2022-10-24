@@ -66,10 +66,11 @@ func Create(c *fiber.Ctx) error {
 		`VALUES` + insertStmt + `;
 	COMMIT;
 	`
+
+	fmt.Println(sqlStatement)
 	_, err := database.CCDB.Exec(sqlStatement)
 	if err != nil {
-		log.Fatalf("An error occured while executing query: %v", err)
-		return err
+		return c.JSON(fiber.Map{"responseCode": 400, "message": "Invalid data", "data": nil})
 	}
 
 	return c.JSON(fiber.Map{"responseCode": 200, "message": "Successfully Transacted", "data": trn})
