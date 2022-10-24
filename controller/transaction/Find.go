@@ -28,7 +28,7 @@ type ViewTransactionModel struct {
 	MiddleName   string     `json:"middle_name"`
 	PricePerKilo float64    `json:"price_per_kilo"`
 	MobileNo     string     `json:"mobile_no"`
-	Stocks       StockSlice `json:"stock"`
+	Pigs         StockSlice `json:"pigs"`
 }
 
 // Make the Stock struct implement the driver.Valuer interface. This method
@@ -67,7 +67,7 @@ func Find(c *fiber.Ctx) error {
 													'qr_code',s.qr_code,
 													'final_weight',s.final_weight,
 													'initial_weight',s.initial_weight
-												)) as stock
+												)) as pig
 											FROM public.t_transaction t
 											JOIN public.t_stock s ON s.id = t.stock_id
 											GROUP BY
@@ -97,7 +97,7 @@ func Find(c *fiber.Ctx) error {
 			&trn.LastName,
 			&trn.MobileNo,
 			&trn.PricePerKilo,
-			&trn.Stocks,
+			&trn.Pigs,
 		); err != nil {
 			return err // Exit if we get an error
 		}
@@ -160,7 +160,7 @@ func FindByRefID(c *fiber.Ctx) error {
 			&trn.LastName,
 			&trn.MobileNo,
 			&trn.PricePerKilo,
-			&trn.Stocks,
+			&trn.Pigs,
 		); err != nil {
 			return err // Exit if we get an error
 		}

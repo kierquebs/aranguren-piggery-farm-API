@@ -31,18 +31,18 @@ func Create(c *fiber.Ctx) error {
 
 	for i, v := range trn.Pigs {
 
-		conv, _ := strconv.Atoi(v.PigID)
+		conv, _ := strconv.Atoi(v.ID)
 
 		id = append(id, conv)
 
-		updateFnlWghtStmt += fmt.Sprintf("UPDATE public.t_stock  SET final_weight = %v WHERE id = %v;", trn.Pigs[i].FinalWeight, trn.Pigs[i].PigID)
+		updateFnlWghtStmt += fmt.Sprintf("UPDATE public.t_stock  SET final_weight = %v WHERE id = %v;", trn.Pigs[i].FinalWeight, trn.Pigs[i].ID)
 
 		if i == len(trn.Pigs)-1 {
 			insertStmt += fmt.Sprintf("('%v',Now(), '%v', '%v', '%v', '%v', %v, %v)",
-				trn.Ref_ID, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.PigID)
+				trn.Ref_ID, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.ID)
 		} else {
 			insertStmt += fmt.Sprintf("('%v',Now(), '%v','%v','%v','%v', %v, %v),",
-				trn.Ref_ID, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.PigID)
+				trn.Ref_ID, trn.FirstName, trn.MiddleName, trn.LastName, trn.MobileNo, trn.PricePerKilo, v.ID)
 		}
 
 	}

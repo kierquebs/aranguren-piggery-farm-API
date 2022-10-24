@@ -2,7 +2,7 @@ package model
 
 type NewTransactionModel struct {
 	Pigs []struct {
-		PigID         string  `json:"pig_id"`
+		ID            string  `json:"id"`
 		QrCode        string  `json:"qr_code"`
 		FinalWeight   float64 `json:"final_weight"`
 		InitialWeight float64 `json:"initial_weight"`
