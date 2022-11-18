@@ -6,6 +6,7 @@ import (
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/qrcode"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/stocks"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/transaction"
+	u "github.com/kierquebs/aranguren-piggery-farm-API/controller/user"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -40,5 +41,6 @@ func Routes(app *fiber.App) {
 
 	//User Group
 	user := api.Group("/user", logger.New())
-	user.Post("/Login/:username", authenticate.Login)
+	user.Post("/Login", authenticate.Login)
+	user.Post("/Create", u.Create)
 }
