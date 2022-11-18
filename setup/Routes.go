@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"github.com/kierquebs/aranguren-piggery-farm-API/controller/authenticate"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/classification"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/qrcode"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/stocks"
@@ -36,4 +37,8 @@ func Routes(app *fiber.App) {
 	trn.Get("/IsSold/:id", transaction.IsSold)
 	trn.Get("/Find", transaction.Find)
 	trn.Get("/Find/:refID", transaction.FindByRefID)
+
+	//User Group
+	user := api.Group("/user", logger.New())
+	user.Post("/Login/:username", authenticate.Login)
 }
