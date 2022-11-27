@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"log"
 	"net/mail"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kierquebs/aranguren-piggery-farm-API/database"
 	"github.com/kierquebs/aranguren-piggery-farm-API/model"
@@ -16,15 +18,17 @@ type userDetails struct {
 	First_Name  string
 	Last_Name   string
 	Middle_Name string
+	Username    string
 	Password    string
+	Token       string
 }
 
 func getUserByUsername(u string) (userDetails, error) {
 	un := userDetails{}
 
-	sqlStatement := `SELECT id, first_name, middle_name, last_name, password FROM public.t_user WHERE username = $1;`
+	sqlStatement := `SELECT id, first_name, middle_name, last_name, password, username FROM public.t_user WHERE username = $1;`
 	row := database.CCDB.QueryRow(sqlStatement, u)
-	switch err := row.Scan(&un.ID, &un.First_Name, &un.Middle_Name, &un.Last_Name, &un.Password); err {
+	switch err := row.Scan(&un.ID, &un.First_Name, &un.Middle_Name, &un.Last_Name, &un.Password, &un.Username); err {
 	case sql.ErrNoRows:
 		return un, err
 	case nil:
@@ -58,18 +62,21 @@ func Login(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"responseCode": 400, "message": "Invalid password!", "data": nil})
 	}
 
-	// token := jwt.New(jwt.SigningMethodHS256)
+	token := jwt.New(jwt.SigningMethodHS256)
 
-	// claims := token.Claims.(jwt.MapClaims)
-	// claims["username"] = ud.Username
-	// claims["user_id"] = ud.ID
-	// claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	claims := token.Claims.(jwt.MapClaims)
+	claims["username"] = user.Username
+	claims["user_id"] = user.ID
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
-	// t, err := token.SignedString([]byte(config.Config("SECRET")))
-	// if err != nil {
-	// 	return c.SendStatus(fiber.StatusInternalServerError)
-	// }
+	const secret = "secret"
 
+	t, err := token.SignedString([]byte("SECRET"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	user.Token = t
 	user.Password = ""
 
 	return c.JSON(fiber.Map{"responseCode": 200, "message": "Succesfully LogIn ", "data": user})

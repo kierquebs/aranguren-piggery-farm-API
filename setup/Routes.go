@@ -3,6 +3,7 @@ package setup
 import (
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/authenticate"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/classification"
+	"github.com/kierquebs/aranguren-piggery-farm-API/controller/contents"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/qrcode"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/stocks"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/transaction"
@@ -43,4 +44,9 @@ func Routes(app *fiber.App) {
 	user := api.Group("/user", logger.New())
 	user.Post("/Login", authenticate.Login)
 	user.Post("/Create", u.Create)
+
+	//Web Group
+	web := api.Group("/web", logger.New())
+	web.Get("/contents", contents.ListAll)
+	web.Get("/contacts", contents.ListContact)
 }
