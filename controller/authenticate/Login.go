@@ -98,7 +98,7 @@ func validatePassword(hashedPass string, pass string) bool {
 
 func updateUserToken(token, user string) error {
 
-	sqlStatement := `UPDATE public.t_user SET token = $2 WHERE id = $1;`
+	sqlStatement := `UPDATE public.t_user SET token = $2 WHERE username = $1;`
 	_, err := database.CCDB.Exec(sqlStatement, user, token)
 	if err != nil {
 		return err
