@@ -79,6 +79,11 @@ func Login(c *fiber.Ctx) error {
 	user.Token = t
 	user.Password = ""
 
+	errT := updateUserToken(user.Token, user.Username)
+	if errT != nil {
+		return c.JSON(fiber.Map{"responseCode": 500, "message": "Unable to set user token", "data": ""})
+	}
+
 	return c.JSON(fiber.Map{"responseCode": 200, "message": "Succesfully LogIn ", "data": user})
 }
 
@@ -89,4 +94,15 @@ func validatePassword(hashedPass string, pass string) bool {
 		return false
 	}
 	return true
+}
+
+func updateUserToken(token, user string) error {
+
+	sqlStatement := `UPDATE public.t_user SET token = $2 WHERE id = $1;`
+	_, err := database.CCDB.Exec(sqlStatement, user, token)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
