@@ -91,9 +91,9 @@ func Login(c *fiber.Ctx) error {
 func validatePassword(hashedPass string, pass string) bool {
 	err1 := password.Compare(hashedPass, pass)
 	if err1 != nil {
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
 func updateUserToken(token, user string) error {
