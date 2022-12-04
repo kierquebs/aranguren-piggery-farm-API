@@ -43,6 +43,7 @@ func Routes(app *fiber.App) {
 	//User Group
 	user := api.Group("/user", logger.New())
 	user.Post("/Login", authenticate.Login)
+	user.Post("/Token/:token", authenticate.TokenValidate)
 	user.Post("/Create", u.Create)
 
 	//Web Group
