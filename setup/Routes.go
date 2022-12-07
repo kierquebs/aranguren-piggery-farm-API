@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"github.com/kierquebs/aranguren-piggery-farm-API/controller/appointment"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/authenticate"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/classification"
 	"github.com/kierquebs/aranguren-piggery-farm-API/controller/contents"
@@ -50,4 +51,8 @@ func Routes(app *fiber.App) {
 	web := api.Group("/web", logger.New())
 	web.Get("/contents", contents.ListAll)
 	web.Get("/contacts", contents.ListContact)
+
+	//Web Group
+	apt := api.Group("/appointment", logger.New())
+	apt.Post("/create", appointment.Create)
 }
