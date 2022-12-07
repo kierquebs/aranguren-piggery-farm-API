@@ -55,4 +55,5 @@ func Routes(app *fiber.App) {
 	//Web Group
 	apt := api.Group("/appointment", logger.New())
 	apt.Post("/create", appointment.Create)
+	apt.Get("/list", appointment.ListAll)
 }
