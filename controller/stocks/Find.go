@@ -235,7 +235,7 @@ func ListAll(c *fiber.Ctx) error {
 					status
 					FROM public.view_t_stock
 					WHERE status != 2 AND status != 3
-					ORDER BY added_date DESC
+					ORDER BY id DESC
 				`)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
