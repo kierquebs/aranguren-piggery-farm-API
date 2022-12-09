@@ -193,7 +193,7 @@ func FindByID(c *fiber.Ctx) error {
 
 		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
 
-		stock.Estimated_Current_Weight = estimatedCurrentWeight
+		stock.Estimated_Current_Weight = estimatedCurrentWeight + stock.Initial_Weight
 		//end
 
 		// Append stock to result
@@ -289,13 +289,9 @@ func ListAll(c *fiber.Ctx) error {
 
 		var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
 
-		fmt.Println("Aerage Added Weight per Day:", averageAddedWeightPerDay)
-		fmt.Println("Initial weight:", stock.Initial_Weight)
+		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
 
-		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(stock.Age_By_Days))
-		fmt.Println("estimatedCurrentWeight:", averageAddedWeightPerDay)
-
-		stock.Estimated_Current_Weight = estimatedCurrentWeight
+		stock.Estimated_Current_Weight = estimatedCurrentWeight + stock.Initial_Weight
 		//end
 
 		// Append stock to result
