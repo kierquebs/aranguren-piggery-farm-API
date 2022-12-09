@@ -87,7 +87,7 @@ func FindByQR(c *fiber.Ctx) error {
 		stock.Age_By_Days = days + int(stock.Initial_Day_Old)
 
 		if days >= 90 {
-			stock.Description = "For Sale"
+			stock.Description = "Sell"
 		} else {
 			stock.Description = "Not yet ready to sell"
 		}
@@ -291,7 +291,7 @@ func ListAll(c *fiber.Ctx) error {
 
 		var estimatedCurrentWeight = stock.Initial_Weight + (averageAddedWeightPerDay * float32(days))
 
-		stock.Estimated_Current_Weight = estimatedCurrentWeight + stock.Initial_Weight
+		stock.Estimated_Current_Weight = estimatedCurrentWeight
 		//end
 
 		// Append stock to result
