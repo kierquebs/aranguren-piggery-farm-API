@@ -87,7 +87,7 @@ func FindByQR(c *fiber.Ctx) error {
 		stock.Age_By_Days = days + int(stock.Initial_Day_Old)
 
 		if days >= 90 {
-			stock.Description = "Sell"
+			stock.Description = "Ready to sell"
 		} else {
 			stock.Description = "Not yet ready to sell"
 		}
@@ -280,7 +280,7 @@ func ListAll(c *fiber.Ctx) error {
 		stock.Age_By_Days = days + int(stock.Initial_Day_Old)
 
 		if stock.Age_By_Days >= 120 {
-			stock.Description = "Sell"
+			stock.Description = "Ready to sell"
 		} else {
 			stock.Description = "Not yet ready to sell"
 		}
