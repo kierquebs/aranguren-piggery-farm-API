@@ -49,11 +49,13 @@ func Routes(app *fiber.App) {
 
 	//Web Group
 	web := api.Group("/web", logger.New())
-	web.Get("/contents", contents.ListAll)
-	web.Get("/contacts", contents.ListContact)
+	web.Get("/Contents", contents.ListAll)
+	web.Get("/Contacts", contents.ListContact)
 
-	//Web Group
+	//Appointment Group
 	apt := api.Group("/appointment", logger.New())
-	apt.Post("/create", appointment.Create)
-	apt.Get("/list", appointment.ListAll)
+	apt.Post("/Create", appointment.Create)
+	apt.Get("/List", appointment.ListAll)
+	apt.Post("/Update", appointment.Update)
+	apt.Post("/Delete/:id", appointment.Delete)
 }
