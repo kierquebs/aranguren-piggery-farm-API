@@ -234,6 +234,7 @@ func ListAll(c *fiber.Ctx) error {
 					Now() AT TIME ZONE 'Asia/Manila',
 					status
 					FROM public.view_t_stock
+					WHERE status != 2 AND status != 3
 					ORDER BY added_date DESC
 				`)
 	if err != nil {
