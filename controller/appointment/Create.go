@@ -1,8 +1,6 @@
 package appointment
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/kierquebs/aranguren-piggery-farm-API/database"
 	"github.com/kierquebs/aranguren-piggery-farm-API/model"
@@ -14,8 +12,7 @@ func Create(c *fiber.Ctx) error {
 
 	newAppointment := model.CreateAppointmentModel{}
 	if err := c.BodyParser(&newAppointment); err != nil {
-		log.Printf("An error occured: %v", err)
-		return c.SendString(err.Error())
+		return c.JSON(fiber.Map{"responseCode": 500, "message": "Error creating appointment", "error": err.Error()})
 	}
 
 	_, err := database.CCDB.Exec(`INSERT INTO public.t_appointment(
@@ -36,8 +33,7 @@ func Create(c *fiber.Ctx) error {
 		newAppointment.Appointment_Date,
 	)
 	if err != nil {
-		log.Fatalf("An error occured while executing query: %v", err)
-		return err
+		return c.JSON(fiber.Map{"responseCode": 500, "message": "Error creating appointment", "error": err.Error()})
 	}
 
 	return c.JSON(fiber.Map{"responseCode": 200, "message": "New appointment successfully added."})
