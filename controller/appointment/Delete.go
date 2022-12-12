@@ -12,9 +12,9 @@ func Delete(c *fiber.Ctx) error {
 	sqlStatement := `DELETE  FROM public.t_appointment WHERE id=$1;`
 	_, err := database.CCDB.Exec(sqlStatement, id)
 	if err != nil {
-		return err
+		return c.Status(500).JSON(fiber.Map{"responseCode": 500, "message": "Appointment successfully cancelled."})
 	}
 
-	return nil
+	return c.JSON(fiber.Map{"responseCode": 200, "message": "Appointment successfully cancelled."})
 
 }
