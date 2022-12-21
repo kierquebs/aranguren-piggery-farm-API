@@ -323,3 +323,37 @@ func InitialWeightAvg() (float32, error) {
 	}
 	return ave, nil
 }
+
+func AddedDateAvg() (float32, error) {
+	var ave float32
+	err := database.CCDB.QueryRow(`with
+			__ts as(
+				select 
+				added_date as ts
+				FROM public.t_stock
+				WHERE status = 2
+			)
+		select
+			to_timestamp(sum(extract(epoch from ts)) / (select count(1) from __ts))
+		from
+			__ts`).Scan(&ave)
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+	return ave, nil
+}
+
+func GeneralExpectedWeight(c *fiber.Ctx) error {
+	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
+	//Estimated Weight computation
+	finalWeightAvg, err := FinalWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	initialWeightAvg, err := InitialWeightAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+}
