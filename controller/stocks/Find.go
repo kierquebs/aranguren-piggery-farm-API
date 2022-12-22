@@ -11,6 +11,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type GeneralExpectedWeightModel struct {
+	Avg_Added_Date           string  `json:"avg_added_date"`
+	Avg_Initial_Weight       float32 `json:"avg_initial_weight"`
+	Avg_Final_Weight         float32 `json:"avg_final_weight"`
+	Avg_Added_Weight_Per_Day float32 `json:"avg_added_weight_per_day"`
+	Days                     int     `json:"days"`
+	Estimated_Weight         float32 `json:"estimated_weight"`
+	Projected_Weight         []Projected_Weight
+}
+
+type Projected_Weight struct {
+	Code   int     `json:"code"`
+	Weight float32 `json:"weight"`
+}
+
 type qr struct {
 	Code string `json:"code"`
 }
@@ -304,7 +319,7 @@ func ListAll(c *fiber.Ctx) error {
 
 func FinalWeightAvg() (float32, error) {
 	var ave float32
-	err := database.CCDB.QueryRow("select AVG(final_weight) FROM public.t_final_weight").Scan(&ave)
+	err := database.CCDB.QueryRow("select AVG(final_weight) FROM public.t_stock WHERE status = 2").Scan(&ave)
 	if err != nil {
 		log.Fatal(err)
 		return 0, err
@@ -316,7 +331,8 @@ func InitialWeightAvg() (float32, error) {
 	var ave float32
 	err := database.CCDB.QueryRow(`	SELECT AVG(t.initial_weight) 
 									FROM public.t_stock t
-									JOIN public.t_final_weight ON t_final_weight.stock_id = t.id`).Scan(&ave)
+									WHERE status = 2
+									`).Scan(&ave)
 	if err != nil {
 		log.Fatal(err)
 		return 0, err
@@ -324,8 +340,18 @@ func InitialWeightAvg() (float32, error) {
 	return ave, nil
 }
 
-func AddedDateAvg() (float32, error) {
-	var ave float32
+func GetCurrentDate() (string, error) {
+	var now string
+	err := database.CCDB.QueryRow(`SELECT Now() AT TIME ZONE 'Asia/Manila'`).Scan(&now)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	return now, nil
+}
+
+func AddedDateAvg() (string, error) {
+	var ave string
 	err := database.CCDB.QueryRow(`with
 			__ts as(
 				select 
@@ -339,13 +365,32 @@ func AddedDateAvg() (float32, error) {
 			__ts`).Scan(&ave)
 	if err != nil {
 		log.Fatal(err)
-		return 0, err
+		return "", err
 	}
 	return ave, nil
 }
 
 func GeneralExpectedWeight(c *fiber.Ctx) error {
 	c.Set(fiber.HeaderAccessControlAllowOrigin, "*")
+
+	compute := GeneralExpectedWeightModel{}
+	//Age computation
+
+	aveDateAdded, err := AddedDateAvg()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	dateNow, err := GetCurrentDate()
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	days, err := utils.CountDays(aveDateAdded, dateNow)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
 	//Estimated Weight computation
 	finalWeightAvg, err := FinalWeightAvg()
 	if err != nil {
@@ -356,4 +401,52 @@ func GeneralExpectedWeight(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
+
+	var averageAddedWeightPerDay = (finalWeightAvg - initialWeightAvg) / 122
+
+	var estimatedCurrentWeight = initialWeightAvg + (averageAddedWeightPerDay * float32(days))
+
+	compute.Avg_Added_Date = aveDateAdded
+	compute.Avg_Added_Weight_Per_Day = averageAddedWeightPerDay
+	compute.Avg_Final_Weight = finalWeightAvg
+	compute.Avg_Initial_Weight = initialWeightAvg
+	compute.Days = days
+	compute.Estimated_Weight = estimatedCurrentWeight
+
+	daysLeft := 122 - days
+	fmt.Println("ave Days: ", days)
+	fmt.Println("days Left: ", daysLeft)
+	estimatedWeightLeft := float32(daysLeft) * compute.Avg_Added_Weight_Per_Day
+	fmt.Println("Added weight per day: ", averageAddedWeightPerDay)
+	fmt.Println("estimatedWeightLeft: ", estimatedWeightLeft)
+	fmt.Println("compute estimatedWeightLeft: ", compute.Estimated_Weight)
+	k := float32((estimatedWeightLeft+compute.Estimated_Weight)*100) / 100
+	fmt.Println("totalEstimatedWeight: ", k)
+
+	avgMonthlyEstimatedWeight := k / float32(5) //We based it on 5 due to the visualization of pig in UI
+	daysL := 122 / 5
+
+	fmt.Println("daysL: ", daysL)
+
+	var i int
+	var daysLe int
+	for i = 1; i < 6; i++ {
+		weight := avgMonthlyEstimatedWeight * float32(i)
+		daysLe = daysLe + daysL
+		fmt.Println("Weight: ", weight)
+
+		item := Projected_Weight{
+			Code:   i,
+			Weight: weight,
+		}
+		compute.AddItem(item)
+
+	}
+
+	return c.JSON(compute)
+}
+
+func (weight *GeneralExpectedWeightModel) AddItem(item Projected_Weight) []Projected_Weight {
+	weight.Projected_Weight = append(weight.Projected_Weight, item)
+	return weight.Projected_Weight
 }

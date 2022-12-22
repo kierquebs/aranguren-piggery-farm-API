@@ -24,6 +24,7 @@ func Routes(app *fiber.App) {
 	stock.Get("/FindByID/:id", stocks.FindByID)
 	stock.Get("/ListAll", stocks.ListAll)
 	stock.Post("/Create", stocks.Create)
+	stock.Post("/GeneralExpectedWeight", stocks.GeneralExpectedWeight)
 
 	//Classification Group
 	class := api.Group("/classification", logger.New())
