@@ -340,6 +340,19 @@ func InitialWeightAvg() (float32, error) {
 	return ave, nil
 }
 
+func InitialDayOldAvg() (float32, error) {
+	var ave float32
+	err := database.CCDB.QueryRow(`	SELECT AVG(t.initial_day_old) 
+									FROM public.t_stock t
+									WHERE status = 2
+									`).Scan(&ave)
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+	return ave, nil
+}
+
 func GetCurrentDate() (string, error) {
 	var now string
 	err := database.CCDB.QueryRow(`SELECT Now() AT TIME ZONE 'Asia/Manila'`).Scan(&now)
@@ -414,29 +427,23 @@ func GeneralExpectedWeight(c *fiber.Ctx) error {
 	compute.Estimated_Weight = estimatedCurrentWeight
 
 	daysLeft := 122 - days
-	fmt.Println("ave Days: ", days)
-	fmt.Println("days Left: ", daysLeft)
 	estimatedWeightLeft := float32(daysLeft) * compute.Avg_Added_Weight_Per_Day
-	fmt.Println("Added weight per day: ", averageAddedWeightPerDay)
-	fmt.Println("estimatedWeightLeft: ", estimatedWeightLeft)
-	fmt.Println("compute estimatedWeightLeft: ", compute.Estimated_Weight)
 	k := float32((estimatedWeightLeft+compute.Estimated_Weight)*100) / 100
-	fmt.Println("totalEstimatedWeight: ", k)
 
 	avgMonthlyEstimatedWeight := k / float32(4) //We based it on 5 due to the visualization of pig in UI
 	daysL := 122 / 4
-
-	fmt.Println("daysL: ", daysL)
+	avgInitialDaysOld, _ := InitialDayOldAvg()
 
 	var i int
 	var daysLe int
 	for i = 1; i < 5; i++ {
 		weight := avgMonthlyEstimatedWeight * float32(i)
+		dayss := avgInitialDaysOld * float32(i)
 		daysLe = daysLe + daysL
 		fmt.Println("Weight: ", weight)
 
 		item := Projected_Weight{
-			Code:   i,
+			Code:   int(dayss),
 			Weight: weight,
 		}
 		compute.AddItem(item)
