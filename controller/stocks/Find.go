@@ -430,7 +430,7 @@ func GeneralExpectedWeight(c *fiber.Ctx) error {
 
 	var i int
 	var daysLe int
-	for i = 1; i < 4; i++ {
+	for i = 1; i < 5; i++ {
 		weight := avgMonthlyEstimatedWeight * float32(i)
 		daysLe = daysLe + daysL
 		fmt.Println("Weight: ", weight)
