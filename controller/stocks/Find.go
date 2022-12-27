@@ -423,14 +423,14 @@ func GeneralExpectedWeight(c *fiber.Ctx) error {
 	k := float32((estimatedWeightLeft+compute.Estimated_Weight)*100) / 100
 	fmt.Println("totalEstimatedWeight: ", k)
 
-	avgMonthlyEstimatedWeight := k / float32(5) //We based it on 5 due to the visualization of pig in UI
-	daysL := 122 / 5
+	avgMonthlyEstimatedWeight := k / float32(4) //We based it on 5 due to the visualization of pig in UI
+	daysL := 122 / 4
 
 	fmt.Println("daysL: ", daysL)
 
 	var i int
 	var daysLe int
-	for i = 1; i < 6; i++ {
+	for i = 1; i < 4; i++ {
 		weight := avgMonthlyEstimatedWeight * float32(i)
 		daysLe = daysLe + daysL
 		fmt.Println("Weight: ", weight)
