@@ -51,6 +51,7 @@ func Routes(app *fiber.App) {
 	//Web Group
 	web := api.Group("/web", logger.New())
 	web.Get("/Contents", contents.ListAll)
+	web.Post("/Update", contents.UpdateWebContent)
 	web.Get("/Contacts", contents.ListContact)
 
 	//Appointment Group
